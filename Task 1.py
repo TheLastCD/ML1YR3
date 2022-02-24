@@ -13,7 +13,6 @@ y_train = data['y']
 x_test = data['x']
 y_test = data['y']
 
-# x_train, x_test, y_train, y_test = train_test_split(data['x'], data['y'], test_size=0.3, shuffle = False)
 
 x_train = x_train.sort_values()
 y_train = y_train.sort_values()
@@ -22,7 +21,8 @@ y_test = y_test.sort_values()
 
 
 
-def getPolynomialDataMatrix(x, degree):
+
+def getPolynomialDataMatrix(x, degree): #Feature Expansion
     # x: training x values (Numpy 1D array)
     # degree: polynomial degree integer (integer)
     # x = x[:-12]
@@ -32,29 +32,12 @@ def getPolynomialDataMatrix(x, degree):
     #creates an degree number of columns each containing the exponent of x uptil degree
     for i in range(1,degree + 1):
         degExponent= np.column_stack((degExponent, x ** i))
-        
-    # print(np.delete(degExponent,0,1))
-    # input()
-    # return exponent array with delete first column of ones
-    return np.delete(degExponent,0,1)
-
-
-def getWeightsForPolynomialFit(x,y,degree):
-    # x: training x values (Numpy 1D array)
-    # y: training y values (Numpy 1D array)
-    # degree: polynomial degree (integer)
+    # return exponent array and delete first column of ones
     
-    # runs getPolynomialDataMatrixfunction
-    X = getPolynomialDataMatrix(x, degree)
+    # return np.delete(degExponent,0,1)
+    return degExponent
 
-    # transpose and dot product against original matrix 
-    XX = X.transpose().dot(X)
-    # solves the matrix 
-    w = np.linalg.solve(XX, X.transpose().dot(y))
-    #w = np.linalg.inv(XX).dot(X.transpose().dot(y))
-    
-    # returns the solved matric
-    return w
+
 
 # so to get training data to plot needed need to add an arguement that makes it plot accurately 
 def pol_regression(features_train, y_train,degree):
@@ -64,111 +47,63 @@ def pol_regression(features_train, y_train,degree):
     
     # a 0 degree polynomial is a constant value
     # this calculates the mean of the data as that is an approximation of all the data points
-    # http://polynomialregression.drque.net/math.html
-    # https://towardsdatascience.com/polynomial-regression-the-only-introduction-youll-need-49a6fb2b86de
     if(degree == 0):
-        # Calculates the mean of the whole training set
+        # Calculates the mean of the whole training set and repeats it for the length y
         parameters = np.repeat(np.mean(y_train),features_train.size)
-        # XX = features_train.transpose().dot(features_train)
-        # parameters = y_train/XX
-
-
-    else:
-        #receives the solved matrix
-        w1 = getWeightsForPolynomialFit(features_train,y_train,degree)
-        # creates a second exponent matrix this time for fitting the data
-        Xtest1 = getPolynomialDataMatrix(features_train, degree)
-        # performs the dot product of the solved matrix and the new exponent matrix
-        parameters = Xtest1.dot(w1)
-    #return result 
-    return parameters
-
-
-
-
-#modified so testing data can be inputted 
-def pol_regression_test(features_train, y_train,degree,test):
-    # features_train: x values (Numpy 1D array)
-    # y_train: y values (Numpy 1D array)
-    # degree: polynomial degree(integer)
-    
-    # a 0 degree polynomial is a constant value
-    # this calculates the mean of the data as that is an approximation of all the data points
-    # http://polynomialregression.drque.net/math.html
-    # https://towardsdatascience.com/polynomial-regression-the-only-introduction-youll-need-49a6fb2b86de
-    if(degree == 0):
-        ytest1 = np.repeat(np.mean(y_train),test.size)
-        # XX = features_train.transpose().dot(features_train)
-        # ytest1 = y_train/XX
         
+        return parameters
+
+
     else:
-        w1 = getWeightsForPolynomialFit(features_train,y_train,degree)
-        Xtest1 = getPolynomialDataMatrix(test, degree)
-        ytest1 = Xtest1.dot(w1)
-    return ytest1
+        X = getPolynomialDataMatrix(features_train, degree)
+        # transpose and dot product against original matrix 
+        XX = X.transpose().dot(X)
+        Y= X.transpose().dot(y_train)
+
+        # solves the matrix 
+        #inverts XX then dots it with Y producing the alpha coeffeicients
+        return linalg.solve(XX,Y)
+
 
 def eval_pol_regression(parameters, x, y, degree):
     # Parameters: return of pol_regression function (Numpy 1D array)
     # x: x values (Numpy 1D array)
     # y: y values (Numpy 1D array)
-    # degree: polynomial degree (Integer)
+    # degree: polynomial degree (Integer)    
+    testMatrix = getPolynomialDataMatrix(x,degree)
 
-    mse = np.square(np.subtract(parameters,y)).mean() 
+    if degree == 0:
+        predictedy= testMatrix
+    else:
+        predictedy = testMatrix.dot(parameters)
+    
+    mse = np.mean((predictedy-y)**2)
     rmse = math.sqrt(mse)
     return rmse
+ 
 
 
-    
-    
-
-
-
-# 0 no one has any clue what 0 degree should result in
-# 0 should maybe return the mean average of the training data
-# Source: http://polynomialregression.drque.net/math.html
-#alex went with x+y
-#np.linspace
-degs = [0,1, 2, 3, 6, 10]
-
-
-
-
-# rmsearrt= []
-# for i in degs:
-#     print(eval_pol_regression(pol_regression_test(x_train,y_train,i, y_test), x_test,y_test,i))  
-#     rmsearrt.append(eval_pol_regression(pol_regression_test(x_train,y_train,i,x_test),x_test,y_test,i))
-
-
-# plt.figure()
-# plt.plot(degs,rmsearrt, 'b')
-# plt.plot
-# plt.show();
-
-
-    
-
-# for i in degs:
-#     title = "Degrees: "+ str(i)
-#     plt.figure(figsize=(8, 6), dpi=100)
-#     plt.title(title)
-#     plt.ylabel('X ')
-#     plt.xlabel('Feature')
-#     plt.xlim(-5,5)
-#     plt.plot(x_train,y_train, 'bo')
-#     # plt.plot(x_test,y_test, 'go')
-#     plt.plot(x_train, pol_regression(x_train,y_train,i), 'r')
+degs = [0,1,2, 3, 6, 10]
 
 pol_return = []
+
+
 for i in degs:
-    pol_return.append(pol_regression(x_train,y_train,i))
+    output = pol_regression(x_train,y_train,i)
+    l = getPolynomialDataMatrix(x_train,i)
+    if i == 0:
+        l = output
+    else:
+        l = l.dot(output)
+    pol_return.append(l)
+
 
 title = "plotted polynomials"
 plt.figure(figsize=(8, 6), dpi=100)
 plt.title(title)
-plt.ylabel('X ')
-plt.xlabel('Feature')
+plt.ylabel('Y')
+plt.xlabel('X')
 plt.xlim(-5,5)
-
 plt.plot(x_test,y_test, 'go')
 deg_0 = plt.plot(x_train, pol_return[0], 'r', label='0')
 deg_1 = plt.plot(x_train, pol_return[1], 'g', label='1')
@@ -177,6 +112,29 @@ deg_3 = plt.plot(x_train, pol_return[3], 'y', label='3')
 deg_4 = plt.plot(x_train, pol_return[4], 'c', label='6')
 deg_5 = plt.plot(x_train, pol_return[5], 'tab:orange', label='10')
 plt.plot(x_train,y_train, 'mo')
-plt.legend(['0','1','2','3','6','10'])
+plt.legend(['data','0','1','2','3','6','10'])
+
+x_train, x_test, y_train, y_test = train_test_split(data['x'], data['y'], test_size=0.3, shuffle = True)
+
+
+test_rmse = []
+train_rmse = []
+for i in degs:
+    output = pol_regression(x_train,y_train,i)
+    pol_return.append(output)
+    test_rmse.append(eval_pol_regression(output,x_test,y_test,i))
+    train_rmse.append(eval_pol_regression(output,x_train,y_train,i))
+
+
+
+
+title = "Rmse"
+plt.figure(figsize = (8,6), dpi = 100)
+plt.ylabel('Error')
+plt.xlabel('Degree')
+test = plt.plot(degs,test_rmse, 'r')
+train = plt.plot(degs,train_rmse, 'b')
+plt.legend(["Testing Data","Training Data"])
+
 
 

@@ -8,6 +8,7 @@ import random
 
 data = pd.read_csv('Task2 - dataset - dog_breeds.csv')
 
+
 def compute_euclidean_distance(vec_1, vec_2):
     # vec_1 , vec_2 two vectors and it calculates the distance
     distance = np.sum(np.square(vec_1 - vec_2)) 
@@ -115,10 +116,10 @@ ones = classified[classified[:,4] == 1]
 plt.figure(figsize=(5, 3), dpi=1000)
 plt.scatter(zeros[:,0],zeros[:,1], s = 6)
 plt.scatter(ones[:,0], ones[:,1], s= 6)
-plt.scatter(centroid_marker[:,0],centroid_marker[:,1], s= 10, marker = '*', c = 'crimson')
+plt.scatter(centroid_marker[:,1],centroid_marker[:,1], s= 10, marker = '*', c = 'crimson')
 plt.title('K = 2')
-plt.xlabel('Tail Length')
-plt.ylabel('Height')
+plt.ylabel('Tail Length')
+plt.xlabel('Height')
 plt.legend(['1', '2','Centroids'])
 plt.show()
 
@@ -126,10 +127,10 @@ plt.show()
 plt.figure(figsize=(5, 3), dpi=1000)
 plt.scatter(zeros[:,0],zeros[:,2], s = 6)
 plt.scatter(ones[:,0], ones[:,2], s= 6)
-plt.scatter(centroid_marker[:,0],centroid_marker[:,1], s= 10, marker = '*', c = 'crimson')
+plt.scatter(centroid_marker[:,0],centroid_marker[:,2], s= 10, marker = '*', c = 'crimson')
 plt.title('K = 2')
-plt.xlabel('Leg Length')
-plt.ylabel('Height')
+plt.ylabel('Leg Length')
+plt.xlabel('Height')
 plt.legend(['1', '2','Centroids'])
 plt.show()
 
@@ -143,6 +144,7 @@ plt.ylabel("Within Cluster Scatter")
 
 # k = 3 plotting 
 centroid_marker, classified, iteration_scatter = kmeans(data.to_numpy(),3) #k=2,3
+
 zeros = classified[classified[:,4] == 0]
 ones = classified[classified[:,4] == 1]
 twos = classified[classified[:,4] == 2]
@@ -154,8 +156,8 @@ plt.scatter(ones[:,0], ones[:,1], s= 6)
 plt.scatter(twos[:,0], twos[:,1], s= 6)
 plt.scatter(centroid_marker[:,0],centroid_marker[:,1], s= 10, marker = '*', c = 'crimson')
 plt.title('K = 3')
-plt.xlabel('Tail Length')
-plt.ylabel('Height')
+plt.ylabel('Tail Length')
+plt.xlabel('Height')
 plt.legend(['1', '2','3','Centroids'])
 plt.show()
 
@@ -166,8 +168,8 @@ plt.scatter(ones[:,0], ones[:,2], s= 6)
 plt.scatter(twos[:,0], twos[:,2], s= 6)
 plt.scatter(centroid_marker[:,0],centroid_marker[:,1], s= 10, marker = '*', c = 'crimson')
 plt.title('K = 3')
-plt.xlabel('Leg Length')
-plt.ylabel('Height')
+plt.ylabel('Leg Length')
+plt.xlabel('Height')
 plt.legend(['1', '2','3','Centroids'])
 plt.show()
 
@@ -179,14 +181,6 @@ plt.xlabel("Iteration Step")
 plt.ylabel("Within Cluster Scatter")
 
 
-# centroid_marker, classified, x = kmeans(data.to_numpy(),2) #k=2,3
-# zeros = classified[classified[:,4] == 0]
-# ones = classified[classified[:,4] == 1]
-# three = classified[classified[:,4] == 2]
-# plt.plot(zeros[:,0],zeros[:,1], 'b.')
-# plt.plot(ones[:,0],ones[:,1], 'g.')
-# plt.plot(three[:,0],three[:,1], 'y.')
-# plt.plot(centroid_marker[:,0],centroid_marker[:,1], 'rp')
 
 
 
